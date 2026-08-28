@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model D — Analogsynthesizer im Browser</title>
+<meta name="description" content="Ein monophoner Analogsynthesizer nach dem Vorbild des Minimoog Model D — mit echtem Ladder-Filter im AudioWorklet.">
+<link rel="stylesheet" href="css/synth.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23111'/><circle cx='16' cy='14' r='7' fill='%23c8c8c8'/><rect x='15' y='7' width='2' height='7' fill='%23111'/><rect x='4' y='24' width='24' height='5' fill='%23eee'/></svg>">
+</head>
+<body>
+
+<div id="splash" class="splash">
+  <div class="splash__box">
+    <h1>Model D</h1>
+    <p class="splash__sub">Ein Analogsynthesizer nach dem Vorbild des Minimoog — drei Oszillatoren,
+       Rauschgenerator und ein 24 dB/Okt Transistor-Ladder-Filter.</p>
+    <button id="powerOn" class="splash__button">Einschalten</button>
+    <p class="splash__hint">Spielen mit der Computertastatur:
+       <kbd>Z</kbd> <kbd>S</kbd> <kbd>X</kbd> <kbd>D</kbd> <kbd>C</kbd> … und
+       <kbd>Q</kbd> <kbd>2</kbd> <kbd>W</kbd> … · Oktave mit <kbd>←</kbd> <kbd>→</kbd></p>
+  </div>
+</div>
+
+<main class="synth" id="synth" hidden>
+
+  <!-- Kopfzeile mit Logo, Presets, Oszilloskop -->
+  <header class="synth__head">
+    <div class="brand">
+      <span class="brand__logo">Model&nbsp;D</span>
+      <span class="brand__model">Analogsynthesizer nach Minimoog-Vorbild</span>
+    </div>
+    <div class="head__tools">
+      <label class="select">
+        <span>Klangfarbe</span>
+        <select id="presetSelect"></select>
+      </label>
+      <label class="select">
+        <span>Spielweise</span>
+        <select id="modeSelect">
+          <option value="mono">Monophon</option>
+          <option value="poly">Polyphon (6)</option>
+        </select>
+      </label>
+      <canvas id="scope" class="scope" width="220" height="56" aria-label="Oszilloskop"></canvas>
+    </div>
+  </header>
+
+  <div class="panel">
+
+    <!-- ---------------------------------------------------------- -->
+    <section class="section section--controllers">
+      <h2 class="section__title">Controllers</h2>
+      <div class="row">
+        <div data-control="knob" data-param="masterTune" data-label="Tune"
+             data-min="-2.5" data-max="2.5" data-default="0" data-decimals="2" data-unit=" HT"></div>
+        <div data-control="knob" data-param="glide" data-label="Glide"
+             data-min="0" data-max="10" data-default="2" data-scale="0.1" data-decimals="1"></div>
+        <div data-control="knob" data-param="modMix" data-label="Modulation Mix"
+             data-min="0" data-max="10" data-default="0" data-scale="0.1" data-decimals="1"></div>
+      </div>
+      <div class="row row--switches">
+        <div data-control="toggle" data-config="glideOn" data-label="Glide" data-states="AUS|EIN"></div>
+        <div data-control="toggle" data-config="decayOn" data-label="Decay" data-states="AUS|EIN" data-default="on"></div>
+        <div data-control="toggle" data-config="oscMod" data-label="Osc.-Modulation" data-states="AUS|EIN"></div>
+      </div>
+      <p class="section__note">Modulation Mix blendet zwischen Oszillator&nbsp;3 (links)
+         und Rauschen (rechts) als Modulationsquelle über.</p>
+    </section>
+
+    <!-- ---------------------------------------------------------- -->
+    <section class="section section--osc">
+      <h2 class="section__title">Oscillator Bank</h2>
+      <div class="osc-grid">
+        <div class="osc-grid__head"><span></span><span>Range</span><span>Frequency</span><span>Waveform</span></div>
+
+        <div class="osc-grid__row">
+          <span class="osc-grid__name">Osc.&nbsp;1</span>
+          <div data-control="selector" data-config="osc1Range" data-label=""
+               data-steps="LO|32′|16′|8′|4′|2′" data-default="3"></div>
+          <div class="osc-grid__empty">— Tastatur —</div>
+          <div data-control="selector" data-config="osc1Wave" data-label=""
+               data-steps="Dreieck|Drei/Säge|Sägezahn|Rechteck|Puls breit|Puls schmal" data-default="2"></div>
+        </div>
+
+        <div class="osc-grid__row">
+          <span class="osc-grid__name">Osc.&nbsp;2</span>
+          <div data-control="selector" data-config="osc2Range" data-label=""
+               data-steps="LO|32′|16′|8′|4′|2′" data-default="3"></div>
+          <div data-control="knob" data-param="osc2Tune" data-label=""
+               data-min="-7" data-max="7" data-default="0" data-decimals="2" data-unit=" HT"></div>
+          <div data-control="selector" data-config="osc2Wave" data-label=""
+               data-steps="Dreieck|Drei/Säge|Sägezahn|Rechteck|Puls breit|Puls schmal" data-default="2"></div>
+        </div>
+
+        <div class="osc-grid__row">
+          <span class="osc-grid__name">Osc.&nbsp;3</span>
+          <div data-control="selector" data-config="osc3Range" data-label=""
+               data-steps="LO|32′|16′|8′|4′|2′" data-default="2"></div>
+          <div data-control="knob" data-param="osc3Tune" data-label=""
+               data-min="-7" data-max="7" data-default="0" data-decimals="2" data-unit=" HT"></div>
+          <div data-control="selector" data-config="osc3Wave" data-label=""
+               data-steps="Dreieck|Drei/Säge|Sägezahn|Rechteck|Puls breit|Puls schmal" data-default="2"></div>
+        </div>
+      </div>
+      <div class="row row--switches">
+        <div data-control="toggle" data-config="osc3Control" data-label="Osc.&nbsp;3 folgt Tastatur"
+             data-states="AUS|EIN" data-default="on"></div>
+      </div>
+      <p class="section__note">Osc.&nbsp;3 auf <b>LO</b> stellen und die Tastaturkopplung
+         ausschalten — dann arbeitet er als LFO.</p>
+    </section>
+
+    <!-- ---------------------------------------------------------- -->
+    <section class="section section--mixer">
+      <h2 class="section__title">Mixer</h2>
+      <div class="mixer">
+        <div class="mixer__strip">
+          <div data-control="knob" data-param="osc1Level" data-label="Osc. 1"
+               data-min="0" data-max="10" data-default="8.5" data-scale="0.1"></div>
+          <div data-control="toggle" data-config="osc1On" data-label="" data-states="AUS|EIN" data-default="on"></div>
+        </div>
+        <div class="mixer__strip">
+          <div data-control="knob" data-param="osc2Level" data-label="Osc. 2"
+               data-min="0" data-max="10" data-default="6" data-scale="0.1"></div>
+          <div data-control="toggle" data-config="osc2On" data-label="" data-states="AUS|EIN" data-default="on"></div>
+        </div>
+        <div class="mixer__strip">
+          <div data-control="knob" data-param="osc3Level" data-label="Osc. 3"
+               data-min="0" data-max="10" data-default="0" data-scale="0.1"></div>
+          <div data-control="toggle" data-config="osc3On" data-label="" data-states="AUS|EIN"></div>
+        </div>
+        <div class="mixer__strip">
+          <div data-control="knob" data-param="noiseLevel" data-label="Noise"
+               data-min="0" data-max="10" data-default="0" data-scale="0.1"></div>
+          <div data-control="toggle" data-config="noiseOn" data-label="" data-states="AUS|EIN"></div>
+          <div data-control="toggle" data-config="noisePink" data-label="Rausch&shy;art" data-states="Weiß|Rosa"></div>
+        </div>
+      </div>
+      <p class="section__note">Die Pegel dürfen ruhig über die Hälfte hinaus: der Mixer
+         übersteuert den Filtereingang, und genau daher kommt die Wärme des Originals.</p>
+    </section>
+
+    <!-- ---------------------------------------------------------- -->
+    <section class="section section--filter">
+      <h2 class="section__title">Modifiers — Filter</h2>
+      <div class="row row--switches">
+        <div data-control="toggle" data-config="filterMod" data-label="Filter&shy;modulation" data-states="AUS|EIN" data-default="on"></div>
+        <div data-control="toggle" data-config="kbTrack1" data-label="Keyboard 1" data-states="AUS|EIN" data-default="on"></div>
+        <div data-control="toggle" data-config="kbTrack2" data-label="Keyboard 2" data-states="AUS|EIN"></div>
+      </div>
+      <div class="row">
+        <div data-control="knob" data-param="cutoff" data-label="Cutoff Frequency"
+             data-min="0" data-max="10" data-default="5.5" data-scale="0.1"></div>
+        <div data-control="knob" data-param="emphasis" data-label="Emphasis"
+             data-min="0" data-max="10" data-default="2.5" data-scale="0.1"></div>
+        <div data-control="knob" data-param="contour" data-label="Amount of Contour"
+             data-min="0" data-max="10" data-default="5.5" data-scale="0.1"></div>
+      </div>
+      <div class="row row--env">
+        <div data-control="knob" data-param="filterAttack" data-label="Attack"
+             data-curve="exp" data-exp-min="0.001" data-exp-max="10"
+             data-min="0" data-max="10" data-default="1"></div>
+        <div data-control="knob" data-param="filterDecay" data-label="Decay"
+             data-curve="exp" data-exp-min="0.005" data-exp-max="20"
+             data-min="0" data-max="10" data-default="5"></div>
+        <div data-control="knob" data-param="filterSustain" data-label="Sustain"
+             data-min="0" data-max="10" data-default="2.5" data-scale="0.1"></div>
+      </div>
+      <p class="section__note">Ab etwa <b>Emphasis 8,5</b> beginnt das Filter zu schwingen —
+         genau wie beim Original.</p>
+    </section>
+
+    <!-- ---------------------------------------------------------- -->
+    <section class="section section--loudness">
+      <h2 class="section__title">Loudness Contour</h2>
+      <div class="row row--env">
+        <div data-control="knob" data-param="ampAttack" data-label="Attack"
+             data-curve="exp" data-exp-min="0.001" data-exp-max="10"
+             data-min="0" data-max="10" data-default="1"></div>
+        <div data-control="knob" data-param="ampDecay" data-label="Decay"
+             data-curve="exp" data-exp-min="0.005" data-exp-max="20"
+             data-min="0" data-max="10" data-default="4.5"></div>
+        <div data-control="knob" data-param="ampSustain" data-label="Sustain"
+             data-min="0" data-max="10" data-default="8.5" data-scale="0.1"></div>
+      </div>
+      <p class="section__note">Der Schalter <b>Decay</b> in den Controllers bestimmt, ob nach dem
+         Loslassen die Decay-Zeit als Ausklang wirkt — ohne ihn bricht der Ton sofort ab.
+         Beide Hüllkurven haben wie im Original kein eigenes Release.</p>
+      <p class="section__note">Die Klaviatur spielt <b>Last-Note-Priorität</b>: wird eine Taste
+         losgelassen, während eine andere noch gehalten wird, springt der Ton dorthin zurück —
+         mit Glide gebunden, ohne neuen Hüllkurvenanschlag.</p>
+    </section>
+
+    <!-- ---------------------------------------------------------- -->
+    <section class="section section--output">
+      <h2 class="section__title">Output</h2>
+      <div class="row">
+        <div data-control="knob" data-param="__volume" data-label="Volume"
+             data-min="0" data-max="10" data-default="6" data-scale="0.1"></div>
+        <div data-control="knob" data-param="drive" data-label="Drive"
+             data-min="0" data-max="10" data-default="3" data-scale="0.1"></div>
+        <div data-control="knob" data-param="__reverb" data-label="Hall"
+             data-min="0" data-max="10" data-default="1.5" data-scale="0.1"></div>
+      </div>
+      <div class="row row--switches">
+        <div data-control="toggle" data-config="filterOn" data-label="Filter" data-states="Bypass|Ein" data-default="on"></div>
+      </div>
+      <button id="panic" class="ghost-button" type="button">Alle Töne aus</button>
+    </section>
+
+  </div>
+
+  <!-- Klaviatur ---------------------------------------------------- -->
+  <div class="keyboard-area">
+    <div class="wheels">
+      <div data-control="wheel" data-param="pitchBend" data-label="Pitch" data-spring="true"></div>
+      <div data-control="wheel" data-param="modWheel" data-label="Mod." data-default="0"></div>
+    </div>
+    <div class="keyboard-wrap">
+      <div id="keyboard"></div>
+      <div class="keyboard__info">
+        Oktave <b id="octaveDisplay">3</b> · <kbd>←</kbd>/<kbd>→</kbd> verschiebt ·
+        Regler mit gedrückter <kbd>Umschalt</kbd>-Taste feiner, Doppelklick setzt zurück
+      </div>
+      <p class="disclaimer">Unabhängiger Nachbau als Hommage — keine Verbindung zu Moog&nbsp;Music&nbsp;Inc.,
+         „Minimoog“ und „Moog“ sind Marken ihrer jeweiligen Inhaber.</p>
+    </div>
+  </div>
+</main>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

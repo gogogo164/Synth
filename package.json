@@ -1,0 +1,13 @@
+{
+  "name": "model-d",
+  "version": "1.0.0",
+  "description": "Monophoner Analogsynthesizer nach Minimoog-Vorbild, umgesetzt in Web Audio",
+  "type": "module",
+  "scripts": {
+    "start": "npx --yes http-server -p 8000 -c-1 .",
+    "test": "node test/dsp-test.mjs"
+  },
+  "keywords": ["synthesizer", "web-audio", "audioworklet", "moog", "ladder-filter"],
+  "license": "MIT",
+  "private": true
+}
