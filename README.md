@@ -23,6 +23,8 @@ Dann <http://localhost:8000> öffnen und auf **Einschalten** klicken.
 
 | Bedienung | Wirkung |
 |---|---|
+| Tasten antippen | spielen (auch mit mehreren Fingern) |
+| ◀ ▶ unter der Klaviatur | Tastenumfang oktavweise verschieben |
 | `Z S X D C V G B H N J M` | untere Oktave |
 | `Q 2 W 3 E R 5 T 6 Y 7 U` | obere Oktave |
 | `←` / `→` | Oktave verschieben |
@@ -34,6 +36,27 @@ Dann <http://localhost:8000> öffnen und auf **Einschalten** klicken.
 
 Über der Klaviatur liegen **Pitch**- und **Modulationsrad**; das Pitchrad
 federt beim Loslassen in die Mitte zurück.
+
+## Auf dem Handy
+
+Läuft im mobilen Browser (Chrome, Safari ab iOS 14.6). Ein paar Dinge sind
+dort anders gelöst:
+
+- **Mehrfingerspiel**: jeder Finger wird einzeln verfolgt, im Polyphon-Modus
+  lassen sich also Akkorde greifen.
+- **Tastenumfang**: passen die 44 Tasten nicht mehr mit mindestens 30 px pro
+  weißer Taste auf den Bildschirm, wird der Ausschnitt verkleinert und beginnt
+  bei C3. Mit den Tasten **◀ ▶** unter der Klaviatur verschiebt er sich
+  oktavweise. Beim Drehen des Geräts wird neu aufgeteilt.
+- **Regler** sind auf Geräten ohne Mauszeiger größer; bedient werden sie durch
+  Ziehen nach oben und unten.
+
+Zwei Einschränkungen, die vom Gerät kommen und nicht vom Programm:
+
+- Steht das iPhone auf **lautlos**, gibt Web Audio nichts aus — der
+  Klingelschalter muss umgelegt sein.
+- Der **Polyphon-Modus** rechnet sechs Stimmen mit Ladder-Filter in Software.
+  Auf älteren Telefonen kann das knacken; monophon ist dort die sichere Wahl.
 
 ## Aufbau des Klangwegs
 
@@ -107,7 +130,8 @@ nach dem Loslassen sowie das Verhalten nahe der Nyquist-Grenze.
 ## Browser
 
 Nötig ist `AudioWorklet` — Chrome, Edge, Firefox und Safari ab Version 14.6.
-Auf dem Handy funktioniert die Klaviatur per Touch.
+Getestet wurde in Chromium, auch mit den Viewports von iPhone 13, iPhone SE
+und Pixel 7 samt Mehrfinger-Bedienung.
 
 ## Zur Konsole
 

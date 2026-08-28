@@ -148,14 +148,19 @@ let keyboard;
 
 function setupKeyboard() {
   keyboard = new Keyboard(document.getElementById('keyboard'), {
-    startNote: 29,   // F1
-    keyCount: 44,    // bis C5 — wie beim Original
+    startNote: 29,   // F1 — der Umfang passt sich der Bildschirmbreite an
     onNoteOn: (note) => engine.noteOn(note, 1),
     onNoteOff: (note) => engine.noteOff(note)
   });
   keyboard.onOctaveChange = (octave) => {
     document.getElementById('octaveDisplay').textContent = String(octave);
   };
+  keyboard.onRangeChange = (label) => {
+    document.getElementById('rangeLabel').textContent = label;
+  };
+  document.getElementById('rangeLabel').textContent = keyboard.rangeLabel();
+  document.getElementById('rangeDown').addEventListener('click', () => keyboard.shiftRange(-1));
+  document.getElementById('rangeUp').addEventListener('click', () => keyboard.shiftRange(1));
 }
 
 async function powerOn() {

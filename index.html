@@ -219,8 +219,15 @@
     </div>
     <div class="keyboard-wrap">
       <div id="keyboard"></div>
+      <div class="keyboard-bar">
+        <button type="button" class="range-button" id="rangeDown"
+                aria-label="Klaviatur eine Oktave tiefer">◀</button>
+        <span class="keyboard__range">Klaviatur <b id="rangeLabel">F1–C5</b></span>
+        <button type="button" class="range-button" id="rangeUp"
+                aria-label="Klaviatur eine Oktave höher">▶</button>
+      </div>
       <div class="keyboard__info">
-        Oktave <b id="octaveDisplay">3</b> · <kbd>←</kbd>/<kbd>→</kbd> verschiebt ·
+        Computertastatur: Oktave <b id="octaveDisplay">3</b>, <kbd>←</kbd>/<kbd>→</kbd> verschiebt ·
         Regler mit gedrückter <kbd>Umschalt</kbd>-Taste feiner, Doppelklick setzt zurück
       </div>
       <p class="disclaimer">Unabhängiger Nachbau als Hommage — keine Verbindung zu Moog&nbsp;Music&nbsp;Inc.,
