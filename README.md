@@ -57,10 +57,17 @@ installierbar; gespielt werden kann trotzdem.
 
 `.github/workflows/pages.yml` prüft bei jedem Push die DSP und veröffentlicht
 das Verzeichnis anschließend auf GitHub Pages — ohne Build, es sind statische
-Dateien. Läuft der Workflow das erste Mal, muss unter
-*Settings → Pages → Source* **GitHub Actions** ausgewählt sein; der Schritt
-`configure-pages` versucht das selbst zu setzen. Danach liegt die App unter
-`https://<benutzer>.github.io/<repo>/` und ist von dort installierbar.
+Dateien.
+
+**Einmalig nötig**: unter *Settings → Pages → Source* **GitHub Actions**
+auswählen. Das kann der Workflow nicht selbst erledigen — sein Token darf
+keine Pages-Seite anlegen (`Resource not accessible by integration`). Solange
+Pages aus ist, endet der Lauf mit einem Hinweis statt mit einem Fehler; danach
+veröffentlicht jeder Push automatisch nach
+`https://<benutzer>.github.io/<repo>/`, und von dort ist die App installierbar.
+
+Genauso gut geht jeder andere statische Hoster mit HTTPS — es muss nur das
+ganze Verzeichnis ausgeliefert werden.
 
 Alle Pfade sind relativ, die App funktioniert also auch in einem
 Unterverzeichnis.

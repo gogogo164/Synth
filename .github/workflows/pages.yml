@@ -1,6 +1,6 @@
-# Veröffentlicht die App auf GitHub Pages. Nötig, weil eine PWA nur über
-# HTTPS installierbar ist — ein Build findet nicht statt, es sind statische
-# Dateien.
+# Prüft die DSP und veröffentlicht die App auf GitHub Pages — eine PWA ist
+# nur über HTTPS installierbar. Ein Build findet nicht statt, es sind
+# statische Dateien.
 name: Pages
 
 on:
@@ -35,12 +35,33 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # Pages lässt sich nicht aus dem Workflow heraus einschalten — der
+      # Token darf keine Pages-Seite anlegen. Ist sie noch nicht aktiv,
+      # endet der Lauf mit einem Hinweis statt mit einem Fehler.
+      - name: Ist Pages eingeschaltet?
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages")
+          if [ "$code" = "200" ]; then
+            echo "bereit=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "bereit=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Pages noch nicht eingeschaltet::Einmalig unter Settings → Pages → Source „GitHub Actions“ wählen. Danach veröffentlicht dieser Workflow bei jedem Push automatisch."
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.pages.outputs.bereit == 'true'
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
+        if: steps.pages.outputs.bereit == 'true'
       - uses: actions/upload-pages-artifact@v3
+        if: steps.pages.outputs.bereit == 'true'
         with:
           path: '.'
       - id: deployment
+        if: steps.pages.outputs.bereit == 'true'
         uses: actions/deploy-pages@v4

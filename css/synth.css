@@ -642,6 +642,9 @@ kbd {
 
 /* Auf Geräten ohne Mauszeiger sind Bedienelemente entsprechend größer */
 @media (hover: none) and (pointer: coarse) {
+  /* Hinweise zur Computertastatur helfen dort nicht weiter */
+  .splash__hint { display: none; }
+
   .knob__body { width: 52px; height: 52px; }
   .knob__scale { width: 68px; height: 68px; }
   .knob__tick { height: 34px; background: linear-gradient(180deg, transparent 0 29px, #8b857e 29px 100%); }
