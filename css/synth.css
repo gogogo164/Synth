@@ -96,6 +96,19 @@ kbd {
 .splash__button:hover { filter: brightness(1.08); }
 .splash__button:disabled { opacity: 0.6; cursor: default; }
 .splash__hint { margin: 26px 0 0; color: var(--ink-dim); font-size: 13px; line-height: 1.9; }
+.splash__install { margin-top: 22px; }
+.splash__install .ghost-button { margin: 0 auto; align-self: center; }
+
+.splash__ios {
+  margin: 14px auto 0;
+  max-width: 420px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink-dim);
+}
+
+.splash__ios b { color: var(--ink); font-weight: 600; }
+
 .splash__error { margin-top: 18px; color: #ff8a6a; font-size: 13px; line-height: 1.5; }
 
 /* ------------------------------ Gehäuse --------------------------- */
@@ -636,6 +649,12 @@ kbd {
   .knob__pointer { height: 26px; margin-top: -26px; }
   .toggle__rocker { width: 32px; height: 40px; }
   .toggle__rocker i { height: 17px; }
+}
+
+@media (display-mode: standalone) {
+  .synth { margin: 0 auto; border-radius: 0; }
+  body { padding: env(safe-area-inset-top) env(safe-area-inset-right)
+                 env(safe-area-inset-bottom) env(safe-area-inset-left); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -86,7 +86,11 @@ export class SynthEngine {
     if (!this.ctx.audioWorklet) {
       throw new Error('AudioWorklet wird von diesem Browser nicht unterstützt.');
     }
-    await this.ctx.audioWorklet.addModule('js/worklets/voice-processor.js');
+    // Pfad aus dem Modul heraus auflösen: funktioniert auch, wenn die App in
+    // einem Unterverzeichnis liegt (GitHub Pages) oder als PWA gestartet wird.
+    await this.ctx.audioWorklet.addModule(
+      new URL('worklets/voice-processor.js', import.meta.url)
+    );
 
     const ctx = this.ctx;
 

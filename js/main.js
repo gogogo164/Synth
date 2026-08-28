@@ -6,6 +6,7 @@ import { SynthEngine, PARAM_DEFAULTS, CONFIG_DEFAULTS } from './engine.js';
 import { Knob, Selector, Toggle, Wheel } from './ui/controls.js';
 import { Keyboard } from './ui/keyboard.js';
 import { PRESETS } from './presets.js';
+import { registerServiceWorker, setupInstall } from './pwa.js';
 
 const engine = new SynthEngine();
 const knobs = new Map();      // Parametername -> Knob
@@ -211,3 +212,7 @@ async function powerOn() {
 }
 
 document.getElementById('powerOn').addEventListener('click', powerOn);
+
+// Offline-Betrieb und Installation stehen unabhängig vom Audioteil bereit
+registerServiceWorker();
+setupInstall(document.getElementById('installApp'), document.getElementById('installHint'));

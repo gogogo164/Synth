@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a2725"/><stop offset="1" stop-color="#111010"/>
+    </linearGradient>
+    <radialGradient id="metal" cx="36%" cy="30%" r="72%">
+      <stop offset="0" stop-color="#fdfcfa"/><stop offset="30%" stop-color="#e4e1dd"/>
+      <stop offset="68%" stop-color="#a9a6a1"/><stop offset="100%" stop-color="#6a6763"/>
+    </radialGradient>
+    <radialGradient id="cap" cx="38%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#4e4a46"/><stop offset="100%" stop-color="#151413"/>
+    </radialGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b5a2f"/><stop offset="1" stop-color="#5a3419"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#wood)"/>
+  <rect x="26" y="26" width="460" height="460" rx="26" fill="url(#panel)"/>
+
+  <!-- Skala -->
+  <g stroke="#8b857e" stroke-width="7" stroke-linecap="round">
+    <line x1="256" y1="96"  x2="256" y2="118" stroke="#ded7ce"/>
+    <line x1="143" y1="143" x2="159" y2="159"/>
+    <line x1="369" y1="143" x2="353" y2="159"/>
+    <line x1="120" y1="256" x2="142" y2="256" stroke="#ded7ce"/>
+    <line x1="392" y1="256" x2="370" y2="256" stroke="#ded7ce"/>
+  </g>
+
+  <!-- Drehregler -->
+  <circle cx="256" cy="228" r="96" fill="url(#metal)"/>
+  <circle cx="256" cy="228" r="58" fill="url(#cap)"/>
+  <rect x="248" y="140" width="16" height="92" rx="8" fill="#ff5c3c"
+        transform="rotate(-38 256 228)"/>
+
+  <!-- Klaviatur -->
+  <g>
+    <rect x="66" y="356" width="380" height="94" rx="8" fill="#0b0a09"/>
+    <g fill="#f4f1ea">
+      <rect x="76"  y="364" width="50" height="78" rx="5"/>
+      <rect x="130" y="364" width="50" height="78" rx="5"/>
+      <rect x="184" y="364" width="50" height="78" rx="5"/>
+      <rect x="238" y="364" width="50" height="78" rx="5"/>
+      <rect x="292" y="364" width="50" height="78" rx="5"/>
+      <rect x="346" y="364" width="50" height="78" rx="5"/>
+      <rect x="400" y="364" width="36" height="78" rx="5"/>
+    </g>
+    <g fill="#14120f">
+      <rect x="112" y="364" width="30" height="48" rx="4"/>
+      <rect x="166" y="364" width="30" height="48" rx="4"/>
+      <rect x="274" y="364" width="30" height="48" rx="4"/>
+      <rect x="328" y="364" width="30" height="48" rx="4"/>
+      <rect x="382" y="364" width="30" height="48" rx="4"/>
+    </g>
+  </g>
+</svg>

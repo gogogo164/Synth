@@ -6,6 +6,13 @@
 <title>Model D — Analogsynthesizer im Browser</title>
 <meta name="description" content="Ein monophoner Analogsynthesizer nach dem Vorbild des Minimoog Model D — mit echtem Ladder-Filter im AudioWorklet.">
 <link rel="stylesheet" href="css/synth.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1c1b1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Model D">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23111'/><circle cx='16' cy='14' r='7' fill='%23c8c8c8'/><rect x='15' y='7' width='2' height='7' fill='%23111'/><rect x='4' y='24' width='24' height='5' fill='%23eee'/></svg>">
 </head>
 <body>
@@ -16,6 +23,14 @@
     <p class="splash__sub">Ein Analogsynthesizer nach dem Vorbild des Minimoog — drei Oszillatoren,
        Rauschgenerator und ein 24 dB/Okt Transistor-Ladder-Filter.</p>
     <button id="powerOn" class="splash__button">Einschalten</button>
+    <div class="splash__install">
+      <button id="installApp" class="ghost-button" type="button" hidden>Als App installieren</button>
+      <p id="installHint" class="splash__ios" hidden>
+        Zum Installieren in Safari auf <b>Teilen</b> tippen und
+        <b>„Zum Home-Bildschirm“</b> wählen — danach startet der Synthesizer
+        im Vollbild und auch ohne Netz.
+      </p>
+    </div>
     <p class="splash__hint">Spielen mit der Computertastatur:
        <kbd>Z</kbd> <kbd>S</kbd> <kbd>X</kbd> <kbd>D</kbd> <kbd>C</kbd> … und
        <kbd>Q</kbd> <kbd>2</kbd> <kbd>W</kbd> … · Oktave mit <kbd>←</kbd> <kbd>→</kbd></p>

@@ -37,6 +37,34 @@ Dann <http://localhost:8000> öffnen und auf **Einschalten** klicken.
 Über der Klaviatur liegen **Pitch**- und **Modulationsrad**; das Pitchrad
 federt beim Loslassen in die Mitte zurück.
 
+## Als App installieren
+
+Der Synthesizer ist eine **PWA**: über HTTPS aufgerufen lässt er sich auf dem
+Homescreen ablegen, startet dann im Vollbild ohne Browserleiste und läuft
+vollständig **ohne Netz** — ein Service Worker legt Oberfläche, Presets und
+das DSP-Worklet beim ersten Aufruf in den Cache.
+
+- **Android/Chrome, Edge, Desktop-Chrome**: Beim Start erscheint die Schaltfläche
+  *Als App installieren*; alternativ Browsermenü → „App installieren“.
+- **iPhone/iPad (Safari)**: *Teilen* → *Zum Home-Bildschirm*. Safari kennt keine
+  Installationsabfrage, deshalb steht dieser Weg als Hinweis auf dem Startbild.
+
+Voraussetzung ist HTTPS (oder `localhost`) — über eine nackte IP-Adresse im
+WLAN wird der Service Worker nicht registriert und die App ist nicht
+installierbar; gespielt werden kann trotzdem.
+
+### Veröffentlichen
+
+`.github/workflows/pages.yml` prüft bei jedem Push die DSP und veröffentlicht
+das Verzeichnis anschließend auf GitHub Pages — ohne Build, es sind statische
+Dateien. Läuft der Workflow das erste Mal, muss unter
+*Settings → Pages → Source* **GitHub Actions** ausgewählt sein; der Schritt
+`configure-pages` versucht das selbst zu setzen. Danach liegt die App unter
+`https://<benutzer>.github.io/<repo>/` und ist von dort installierbar.
+
+Alle Pfade sind relativ, die App funktioniert also auch in einem
+Unterverzeichnis.
+
 ## Auf dem Handy
 
 Läuft im mobilen Browser (Chrome, Safari ab iOS 14.6). Ein paar Dinge sind
@@ -102,8 +130,12 @@ Decay-Zeit auch für den Ausklang gilt.
 
 ```
 index.html                  Bedienfeld als Markup
+manifest.webmanifest        App-Beschreibung für die Installation
+sw.js                       Service Worker (Offline-Betrieb)
+icons/                      App-Icons, aus icons/source.svg erzeugt
 css/synth.css               Gestaltung des Panels
 js/main.js                  Verdrahtung von Oberfläche und Klangerzeugung
+js/pwa.js                   Registrierung und Installationsangebot
 js/engine.js                Audio-Graph, Stimmverwaltung, Parameter-Routing
 js/presets.js               Werksklänge
 js/ui/controls.js           Drehregler, Wahlschalter, Kippschalter, Räder
